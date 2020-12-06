@@ -9,7 +9,7 @@
 
 
 
-int print_ip_addr(bpf_u_int32 ip);
+void print_ip_addr(bpf_u_int32 ip);
 
 void loop_callback(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
 

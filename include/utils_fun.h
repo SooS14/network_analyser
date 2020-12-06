@@ -16,13 +16,17 @@ struct ip_addr {
 
 
 
+
+
+
 void print_hex_ascii_line(const u_char *payload, int len, int offset);
 
 void print_payload(const u_char *payload, int len);
 
-int print_ip_addr(bpf_u_int32 ip);
+void print_ip_addr(bpf_u_int32 ip);
 
 void print_hex(const unsigned char *payload, int payload_size);
 
+int hex2dec(const unsigned char * hex_array, int length);
 
 #endif

@@ -2,24 +2,33 @@
 #include <pcap/pcap.h>
 #include "utils_fun.h"
 #include <ctype.h>
-
-
+#include <math.h>
+#include <stdio.h>
 
 
 /**
  * @brief print an ip adrress under a recognisable form 
  *
- * @param ip
- * 
  * This function uses a cast to fill 4 slots in a struct representing an IPv4 address
+ * 
+ * @param ip the ip address to be printed
+ * 
  */
-int print_ip_addr(bpf_u_int32 ip) {
+void print_ip_addr(bpf_u_int32 ip) {
         struct ip_addr *ptr=(struct ip_addr*)&ip;
         printf ("%d.%d.%d.%d\n", ptr->one,ptr->two,ptr->three,ptr->four);
 }
 
 
 
+
+
+
+/**
+ * @brief print n hex caracter 
+ * 
+ * 
+ */
 void print_hex(const unsigned char *payload, int payload_size)
 {
 	const unsigned char *temp_pay = payload;
@@ -98,7 +107,7 @@ print_hex_ascii_line(const u_char *payload, int len, int offset)
 	ch = payload;
 	for(i = 0; i < len; i++) {
 		if (isprint(*ch))
-			printf("%c", *ch);
+			printf("%c", ntohs(*ch));
 		else
 			printf(".");
 		ch++;

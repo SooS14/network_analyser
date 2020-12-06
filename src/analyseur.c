@@ -15,7 +15,7 @@ For lists of detected and suppressed errors, rerun with: -s
 #include <string.h>
 #include <ctype.h>
 
-#include "args-parser.h"
+#include "args_parser.h"
 #include "header_def.h"
 #include "pcap_fun.h"
 #include "utils_fun.h"
@@ -23,85 +23,6 @@ For lists of detected and suppressed errors, rerun with: -s
 
 
 #define SIZE 1024
-
-
-
-
-
-
-
-/**
- * @brief callback function
- *
- */
-void loop_callback(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
-{
-
-    const struct ethernet_head *ethernet;
-    const struct ip_head *ip;
-    const struct tcp_head *tcp;
-    ethernet = (struct ethernet_head*) (packet);
-
-    unsigned int size_ip = 0;
-    unsigned int size_tcp = 0;
-    unsigned int size_tot = 0;
-
-
-    switch (ethernet->data_type)
-    {
-    case DT_IP:
-        ip = (const struct ip_head *) (packet + SIZE_ETHER);
-        if ((size_ip = HDLEN(ip)*4) < 20)
-        {
-            return;
-        } 
-        break;
-
-
-        switch (ip->protocol)
-        {
-        case TCP:
-            tcp = (const struct tcp_head *) (packet + SIZE_ETHER + size_ip);
-            if ((size_tcp = D_OFF(tcp)*4) < 20)
-            {
-                return;
-            }
-            break;
-
-        case UDP:
-            printf("analyse_ip, UDP header, not supported\n");
-            return;    
-
-        default:
-            printf("analyse_ip, don't know what it is\n");
-            return;
-        }
-        
-
-    case DT_ARP:
-        printf("analyse_ethernet, ARP header, not supported\n");
-        return;
-    
-    case DT_RARP:
-        printf("analyse_ethernet, RARP header, not supported\n");
-        return;
-    
-    default:
-        printf("analyse_ethernet, don't know what it is\n");
-        return;
-    }
-
-    
-	unsigned char *payload;
-	payload = (unsigned char *)(packet + SIZE_ETHER + size_ip + size_tcp);
-
-
-    printf("packet lenght : %d \n", header->len);
-    print_hex(payload, ip->tot_len - (size_ip + size_tcp));
-
-}
-
-
 
 
 
@@ -115,7 +36,7 @@ void loop_callback(u_char *args, const struct pcap_pkthdr *header, const u_char 
  */
 int main(int argc, char *argv[])
 {
-    //fill the struct args with the arguments from the command line
+
     args_t args;
     parse_args(argc, argv, &args);    
 
@@ -140,7 +61,13 @@ int main(int argc, char *argv[])
     struct pcap_pkthdr header;
     const u_char * packet;
     int pcap_loop_ret;
-    int count_loop = 10000;
+    int count_loop = args.loop;
+    if (count_loop < 0)
+    {
+        fprintf(stderr, "err count_loop is < 0\n");
+        exit(EXIT_FAILURE);
+    }
+    
 
 
 
@@ -157,21 +84,24 @@ int main(int argc, char *argv[])
     
         }
 
-
         else 
-        
         
         {
             int check_device = 0;
-            for (pcap_if_t * i = alldevsp; i != NULL; i->next)
+            pcap_if_t * ptr = alldevsp;
+
+            while (ptr != NULL)
             {
                 if (strncmp(alldevsp->name, args.interface, SIZE) == 0)
                 {
+                
                     printf("your device has been found within findalldevs's list, launching live analyse\n");
                     check_device = 1;
                     device = args.interface;
                     break;
                 }
+
+                ptr = ptr->next;
             
             }
 
@@ -185,13 +115,11 @@ int main(int argc, char *argv[])
 
         open_live(device, errbuf, &p);
 
-        //checks if the device is being used with ethernet
         datalink(&p, device);
 
         if (args.flags & FILTER)
         {
 
-            //get the ip addr and mask of the device
             lookupnet(device,&mask,&ip_addr,errbuf);
 
             set_filters(&p, &fp, args.filter, mask);
@@ -214,9 +142,9 @@ int main(int argc, char *argv[])
     }
 
 
+    u_char * verbose = (u_char *) args.verbose_lev;
 
-
-    pcap_loop_ret = pcap_loop(p, count_loop, loop_callback, NULL);
+    pcap_loop_ret = pcap_loop(p, count_loop, ethernet_pkt, verbose);
 
     if (pcap_loop_ret == 0)
     {

@@ -2,7 +2,10 @@
 #define HEADER_DEF_H
 
 #include <pcap/pcap.h>
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netinet/if_ether.h>
 
 #define ADDR_LEN_ETHER 6
 #define SIZE_ETHER 14
@@ -13,16 +16,10 @@
 #define DT_RARP 0x0835 
 
 
-
 // macros used to set appart the IP header lenght from the IP version
-#define VER(ip)			(((ip)->ver_dhlen) >> 4)
+#define VER(ip)			(((ip)->ver_hdlen) >> 4)
 #define HDLEN(ip)		(((ip)->ver_hdlen) & 0b00001111)
 
-//IP flags
-#define RF 0x8000            /* reserved fragment flag */
-#define DF 0x4000            /* don't fragment flag */
-#define MF 0x2000            /* more fragments flag */
-#define OFFMASK 0x1fff       /* mask for fragmenting bits */
 
 // IP protocols
 #define TCP 0x06
@@ -82,6 +79,25 @@ struct tcp_head {
 	unsigned short chk_sum;
 	unsigned short ugent_ptr;
 };
+
+
+/* Struct representing a UDP header */
+struct udp_head {
+	unsigned short src_port;
+	unsigned short dst_port;
+    unsigned short len;
+	unsigned short chk_sum;
+};
+
+
+void ethernet_pkt(u_char *verbose, const struct pcap_pkthdr *header, const u_char *packet);
+
+int ip_pkt(u_char * verbose, const u_char *packet);
+
+int tcp_pkt(u_char * verbose, const u_char *packet);
+
+void udp_pkt(u_char * verbose, const u_char *packet);
+
 
 
 #endif 

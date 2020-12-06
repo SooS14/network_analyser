@@ -1,23 +1,36 @@
-#include "args-parser.h"
+#include "args_parser.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 
-int
-parse_args(int argc,  char ** argv, args_t *args)
+
+/**
+ * @brief Parse the arguments in the command ligne
+ *
+ * Retreive options using getopt function. Options are stored in args_t struct.
+ * args->flags is a quick way to know what are the available informations
+ * 
+ * @param argc (standard main argument)
+ * @param argv (standard main argument)
+ * @param args will receive the argument values
+ * 
+ */
+void parse_args(int argc,  char ** argv, args_t *args)
 {
     args->interface = NULL;
     args->file_path = NULL;
     args->flags = NO_FLAGS;
     args->filter = NULL;
-    args->verbose_lev = 0;
+    args->loop = 1000;
+    args->verbose_lev = V_CONCISE;
 
     opterr = 0;
     int c;
 
-    while ((c = getopt (argc, argv, "hi:o:f:v:")) != -1)
+    while ((c = getopt (argc, argv, "hi:o:f:v:l:")) != -1)
     {
         switch (c)
         {
@@ -36,8 +49,21 @@ parse_args(int argc,  char ** argv, args_t *args)
                 args->filter = optarg;
                 args->flags |= FILTER;
                 break;
+            case 'l':
+                args->loop = atoi(optarg);
+                args->flags |= LOOP;
+                break;
             case 'v':
-                args->verbose_lev = atoi(optarg);
+                if ((strncmp(optarg, "1", 2) != 0) &&
+                    (strncmp(optarg, "2", 2) != 0) &&
+                    (strncmp(optarg, "3", 2) != 0))
+                {
+                    fprintf(stderr, "Unknown verbose level %s \n", optarg);
+                    exit(1);
+                }
+
+                args->verbose_lev = optarg;
+                
                 break;
                 
             case '?':
@@ -70,16 +96,25 @@ parse_args(int argc,  char ** argv, args_t *args)
 }
 
 
-void
-print_usage(void)
+
+
+
+
+/**
+ * @brief print available options
+ * 
+ */
+void print_usage(void)
 {
   puts(
   "Usage:\n"
 
-  "-i <interface> :   interface pour l’analyse live\n"
-  "-o <fichier> :     fichier d’entrée pour l’analyse offline\n"
-  "-f <filtre> :      filtre BPF (optionnel)\n"
-  "-v <1..3> :        niveau de verbosité\n"
-  "                   (1=très concis ; 2=synthétique ; 3=complet)\n"
-  "-h                 afficher l'aide\n");
+  "-i <interface> :   interface for live analyse\n"
+  "-o <fichier> :     file for offline analyse\n"
+  "-f <filtre> :      GMP filter (optional)\n"
+  "-v <1..3> :        verbosity level\n"
+  "                   (1=very concise ; 2=concise ; 3=complete)\n"
+  "                   verbosity is set to very concise by default\n"
+  "-l <number> :      number of packet, set to 1000 by default\n"
+  "-h                 print help\n");
 }
