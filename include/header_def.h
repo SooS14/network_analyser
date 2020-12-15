@@ -11,7 +11,7 @@
 #define SIZE_ETHER 14
 
 // ethernet data type 
-#define DT_IP 0x08			//TRES BIZARRE A VOIR -> il manque le dernier octet à data_type
+#define DT_IP 0x0800			
 #define DT_ARP 0x0806
 #define DT_RARP 0x0835 
 
@@ -19,11 +19,13 @@
 // macros used to set appart the IP header lenght from the IP version
 #define VER(ip)			(((ip)->ver_hdlen) >> 4)
 #define HDLEN(ip)		(((ip)->ver_hdlen) & 0b00001111)
+#define FRAG_OFF(ip)    (ntohs((ip)->flags_frag_off) & 0b0000111111111111)        
+#define IP_FLAGS(ip)    ((ntohs((ip)->flags_frag_off) & 0b1111000000000000))
 
 
 // IP protocols
-#define TCP 0x06
-#define UDP 0x11
+#define PROT_TCP 0x06
+#define PROT_UDP 0x11
 
 
 //macro used to separate data offset from reserved informations
@@ -38,26 +40,45 @@
 #define URG 0x20
 #define ECE 0x40
 #define CWR 0x80
-#define FLAGS (FIN|SYN|RST|ACK|URG|ECE|CWR)
+
+
+//ARP protocol type
+#define TYPE_IPv4 	0x0800
+#define TYPE_IPv6 	0x86dd
+
+//Application protocol's designated port
+//tcp
+#define PORT_DNS	    53
+#define PORT_FTP	    21
+#define PORT_HTTP 	    80
+#define PORT_POP	    110
+#define PORT_IMAP	    143
+#define PORT_SMTP	    25
+
+//udp
+#define PORT_BOOTP_C	67
+#define PORT_BOOTP_S	68
 
 
 
-/* Struct representing an ethernet header */
+
+
+// Struct representing an ethernet header
 struct ethernet_head {
 	unsigned char dst[ADDR_LEN_ETHER];
 	unsigned char src[ADDR_LEN_ETHER]; 
-	unsigned short data_type; 
+	unsigned short data_type;
 };
 
 
 
-/* Struct representing an IP header */
+// Struct representing an IP header
 struct ip_head {
-	unsigned char ver_hdlen;		//version << 4 ; header length >> 2
+	unsigned char ver_hdlen;
 	unsigned char ToS;
 	unsigned short tot_len;
 	unsigned short ident;
-	unsigned short frag_off;
+	unsigned short flags_frag_off;
 	unsigned char ttl;
 	unsigned char protocol;
 	unsigned short chk_sum;
@@ -67,13 +88,13 @@ struct ip_head {
 
 
 
-/* Struct representing a TCP header */
+// Struct representing a TCP header
 struct tcp_head {
 	unsigned short src_port;
 	unsigned short dst_port;
 	unsigned int seq_num;
 	unsigned int ack_num;
-	unsigned char d_off;			// to get data offset use the macro D_OFF
+	unsigned char d_off;
 	unsigned char tcp_flags;
 	unsigned short window;
 	unsigned short chk_sum;
@@ -81,7 +102,7 @@ struct tcp_head {
 };
 
 
-/* Struct representing a UDP header */
+// Struct representing a UDP header
 struct udp_head {
 	unsigned short src_port;
 	unsigned short dst_port;
@@ -90,14 +111,41 @@ struct udp_head {
 };
 
 
+// Struct representing a DNS header
+struct dns_head {
+    unsigned short id;        
+    unsigned short flags;     
+    unsigned short que;   
+    unsigned short ans;   
+    unsigned short aut;   
+    unsigned short add;   
+    unsigned char payload[];  
+ } ;
+
+
 void ethernet_pkt(u_char *verbose, const struct pcap_pkthdr *header, const u_char *packet);
 
-int ip_pkt(u_char * verbose, const u_char *packet);
+void ip_pkt(u_char * verbose, const u_char *packet);
 
-int tcp_pkt(u_char * verbose, const u_char *packet);
+void tcp_pkt(u_char * verbose, const u_char *packet, int len_ip);
 
-void udp_pkt(u_char * verbose, const u_char *packet);
+void udp_pkt(u_char * verbose, const u_char *packet, int len_ip);
 
+void arp_pkt(u_char * verbose, const u_char * packet);
+
+void ftp_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void http_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void dns_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void pop_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void imap_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void smtp_pkt(u_char * verbose, const u_char *packet, int app_len);
+
+void bootp_pkt(u_char * verbose, const u_char *packet, int len_ip);
 
 
 #endif 

@@ -2,11 +2,6 @@
 #define ARGS_H
 
 
-#define V_CONCISE 0
-#define CONCISE 1
-#define COMPLETE 2
-
-
 typedef enum flags_t {
     NO_FLAGS = 0,
     LIVE_ANALYSE = 1,

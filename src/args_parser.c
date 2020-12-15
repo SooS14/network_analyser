@@ -24,8 +24,9 @@ void parse_args(int argc,  char ** argv, args_t *args)
     args->file_path = NULL;
     args->flags = NO_FLAGS;
     args->filter = NULL;
-    args->loop = 1000;
-    args->verbose_lev = V_CONCISE;
+    args->loop = 0;
+    args->verbose_lev = "1";
+    
 
     opterr = 0;
     int c;
@@ -56,7 +57,8 @@ void parse_args(int argc,  char ** argv, args_t *args)
             case 'v':
                 if ((strncmp(optarg, "1", 2) != 0) &&
                     (strncmp(optarg, "2", 2) != 0) &&
-                    (strncmp(optarg, "3", 2) != 0))
+                    (strncmp(optarg, "3", 2) != 0) &&
+                    (strncmp(optarg, "4", 2) != 0))
                 {
                     fprintf(stderr, "Unknown verbose level %s \n", optarg);
                     exit(1);
@@ -112,9 +114,10 @@ void print_usage(void)
   "-i <interface> :   interface for live analyse\n"
   "-o <fichier> :     file for offline analyse\n"
   "-f <filtre> :      GMP filter (optional)\n"
-  "-v <1..3> :        verbosity level\n"
-  "                   (1=very concise ; 2=concise ; 3=complete)\n"
+  "-v <1..4> :        verbosity level\n"
+  "                   (1=very concise ; 2=concise ; 3=complete ; 4=full_frame)\n"
   "                   verbosity is set to very concise by default\n"
-  "-l <number> :      number of packet, set to 1000 by default\n"
+  "-l <number> :      number of packet to analyse, by default the\n"
+  "                   analyse stops when there's no more packet\n"
   "-h                 print help\n");
 }

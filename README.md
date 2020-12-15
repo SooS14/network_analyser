@@ -5,15 +5,24 @@ options :
 -i <interface> : interface for live analysis
 -o <file> : input file for offline analysis
 -f <filter> : GMP filter (optional)
--v <1..3> : level of verbosity (1=very concise; 2=concise; 3=complete)
--l <number> : number of packet, set to 1000 by default
+-v <1..4> : level of verbosity (1=very concise; 2=concise; 3=complete 4=full_frame)
+-l <number> : number of packet to analyse, by default the analyse stops when there's no more packet
+
 
 supported protocols :
 
-ethernet,
+ ethernet,
+ ARP,
  IP,
  UDP,
  TCP,
+ BOOTP
+ DNS, 
+ HTTP, 
+ FTP, 
+ SMTP,
+ IMAP,
+ POP,
  
  
  
@@ -25,19 +34,22 @@ options :
 -i <interface> : interface pour l’analyse live
 -o <fichier> : fichier d’entrée pour l’analyse offline
 -f <filtre> : filtre BPF (optionnel)
--v <1..3> : niveau de verbosité (1=très concis ; 2=synthétique ; 3=complet)
--l <nombre> : nombre de paquet, positionné à 1000 par défaut
+-v <1..4> : niveau de verbosité (1=très concis ; 2=synthétique ; 3=complet 4=trames complètes)
+-l <nombre> : nombre de paquet à analyser, par défaut, l'analyse se poursuit tant qu'il y a des paquets.
+
 
 protocols supportés :
 
-ethernet,
+ ethernet,
+ ARP,
  IP,
  UDP,
  TCP,
- 
+ BOOTP
+ DNS, 
+ HTTP, 
+ FTP, 
+ SMTP,
+ IMAP,
+ POP,
 
-
-à faire :
-
- ARP,
-applications comme : BOOTP et DHCP, DNS, HTTP, FTP, SMTP, etc.

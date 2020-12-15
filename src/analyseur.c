@@ -7,6 +7,7 @@ valgrind --tool=memcheck --leak-check=full ./bin/analyseur
 For lists of detected and suppressed errors, rerun with: -s
 */
 
+// TODO : strstr bizarre - print_hex ne print pas tout - vendor spe ne marche pas
 
 
 #include <pcap/pcap.h>
@@ -29,10 +30,12 @@ For lists of detected and suppressed errors, rerun with: -s
 
 
 /**
- * @brief main function
+ * @brief main function of the project
  *
+ * This function opens the interfaces/pcap files, apply filters, and call for pcap_loop.
  * 
- * 
+ * @param argc 
+ * @param argv
  */
 int main(int argc, char *argv[])
 {
@@ -58,18 +61,18 @@ int main(int argc, char *argv[])
 
 
     //var used by pcap_loop 
-    struct pcap_pkthdr header;
-    const u_char * packet;
     int pcap_loop_ret;
-    int count_loop = args.loop;
-    if (count_loop < 0)
+
+
+    if (args.flags && LOOP)
     {
+        if (args.loop < 0)
+        {
         fprintf(stderr, "err count_loop is < 0\n");
         exit(EXIT_FAILURE);
+        }
     }
     
-
-
 
     if (!(args.flags & OFFLINE_ANALYSE))
     {
@@ -144,8 +147,16 @@ int main(int argc, char *argv[])
 
     u_char * verbose = (u_char *) args.verbose_lev;
 
-    pcap_loop_ret = pcap_loop(p, count_loop, ethernet_pkt, verbose);
-
+    if (args.flags && LOOP)
+    {
+        pcap_loop_ret = pcap_loop(p, args.loop, ethernet_pkt, verbose);
+    }
+    else
+    {
+        pcap_loop_ret = pcap_loop(p, -1, ethernet_pkt, verbose);
+    }
+    
+    
     if (pcap_loop_ret == 0)
     {
         printf("count is exhausted or no more packets are available\n");

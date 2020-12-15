@@ -5,38 +5,91 @@
 
 
 
+
+
+
+/**
+ * @brief prints main information contained in the IP header
+ * 
+ * @param ip is a struct representing the IP header
+ */
 void ip_v2(const struct ip_head *ip)
 {
     printf("\n-> ip header \n");
     printf("ver : %i", ip->ver_hdlen >> 4);
-    printf("src @ : %s",inet_ntoa(ip->src));
+
+    printf("protocol : ");
+    switch (ip->protocol)
+    {
+    case PROT_UDP:
+        printf("UDP ; ");
+        break;
+    case PROT_TCP:
+        printf("TCP ; ");
+        break;    
+    default:
+        printf("... ; ");
+        break;
+    }
+
+    printf("src @ : %s ; ",inet_ntoa(ip->src));
     printf("dst @ : %s",inet_ntoa(ip->dst));
-    printf("prot : ");
 }
 
+
+
+/**
+ * @brief prints all the information contained in the IP header
+ * 
+ * @param ip is a struct representing the IP header
+ */
 void ip_v3(const struct ip_head *ip)
 {   
 
     printf("\n");
-    printf("\n-> ip header \n");
+    printf("\n############ ip header ###########\n");
     printf("Version : %i\n", VER(ip));
     printf("Header Length : %i\n", HDLEN(ip));
     printf("Type of Service : 0x%.2x\n", ip->ToS);
     printf("Total Length : %i\n", ntohs(ip->tot_len));
     printf("Identification : 0x%.2x\n", ntohs(ip->ident));
-    printf("Fragment Offset : 0x%.2x\n", ntohs(ip->frag_off));
+    printf("IP flags : 0x%.2x\n", IP_FLAGS(ip));    
+    printf("Fragment Offset : %i\n", FRAG_OFF(ip));
     printf("Time to Live : %i\n", ip->ttl);
-    printf("Header Checksum : 0x%.2x\n", ntohs(ip->chk_sum));
-    printf("Source Addresse : %s\n", inet_ntoa(ip->src));
-    printf("Destination Addresse : %s\n", inet_ntoa(ip->dst));
+
     printf("Protocol : ");
+    switch (ip->protocol)
+    {
+    case PROT_UDP:
+        printf("UDP\n");
+        break;
+    case PROT_TCP:
+        printf("TCP\n");
+        break;    
+    default:
+        printf("...\n");
+        break;
+    }
+
+    printf("Header Checksum : 0x%.2x\n", ntohs(ip->chk_sum));
+    printf("Source Adresse : %s\n", inet_ntoa(ip->src));
+    printf("Destination Adresse : %s\n", inet_ntoa(ip->dst));
 }
 
 
 
-int ip_pkt(u_char * verbose, const u_char * packet)
+/**
+ * @brief process the IP header
+ * 
+ * the packet is then passed to functions that are specialised in processing
+ * transport layer headers.
+ * 
+ * @param verbose 
+ * @param packet is the data received from eth_pkt
+ */
+void ip_pkt(u_char * verbose, const u_char * packet)
 {
-    int trnsprt_len = 0;
+
     const struct ip_head *ip;
     ip = (const struct ip_head*) packet;
 
@@ -44,6 +97,7 @@ int ip_pkt(u_char * verbose, const u_char * packet)
     switch (verb)
     {
     case 1:
+        printf("IP ; ");
         break;
 
     case 2:
@@ -61,24 +115,17 @@ int ip_pkt(u_char * verbose, const u_char * packet)
 
     switch (ip->protocol)
     {
-    case UDP:
-        printf("UDP");
-        udp_pkt(verbose, packet + HDLEN(ip) * 4);
-        trnsprt_len = 8;
+    case PROT_UDP:
+        udp_pkt(verbose, packet + HDLEN(ip) * 4, ntohs(ip->tot_len));
         break;
 
-    case TCP:
-        printf("TCP");
-        trnsprt_len = tcp_pkt(verbose, packet + HDLEN(ip) * 4);
+    case PROT_TCP:
+        tcp_pkt(verbose, packet + HDLEN(ip) * 4, ntohs(ip->tot_len));
         break;
     
     default:
-        printf("....\n");
         fprintf(stderr, "Transport protocol not supported\n");
         break;
     }
 
-
-    int totlen = ntohs(ip->tot_len);
-    return totlen - HDLEN(ip) - trnsprt_len;
 }

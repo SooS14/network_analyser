@@ -5,80 +5,119 @@
 
 
 
-void ip_v2(const struct ip_head *ip)
+
+/**
+ * @brief prints some informations in the ARP header
+ * 
+ * @param arp is a struct representing the ARP header
+ */
+void arp_v2(const struct ether_arp *arp)
 {
-    printf("\n-> ip header \n");
-    printf("ver : %i", ip->ver_hdlen >> 4);
-    printf("src @ : %s",inet_ntoa(ip->src));
-    printf("dst @ : %s",inet_ntoa(ip->dst));
-    printf("prot : ");
+    printf("\n-> ARP \n");
+    printf("Operation : %i ", ntohs(arp->arp_op));
+    if(ntohs(arp->arp_op) == ARPOP_REQUEST)
+		printf("request (%.2x)", ntohs(arp->arp_op));
+    if(ntohs(arp->arp_op) == ARPOP_REPLY)
+		printf("reply (%.2x)", ntohs(arp->arp_op));
+    printf(" ; ");
+
+	printf("Sender : %.2x:...:%.2x",arp->arp_sha[0],arp->arp_sha[5]);
+    printf(" ; Target : %.2x:...:%.2x", arp->arp_tha[0], arp->arp_tha[5]);
+
 }
 
-void ip_v3(const struct ip_head *ip)
+
+/**
+ * @brief prints all the informations in the ARP header
+ * 
+ * @param arp is a struct representing the ARP header
+ */
+void arp_v3(const struct ether_arp *arp)
 {   
 
     printf("\n");
-    printf("\n-> ip header \n");
-    printf("Version : %i\n", VER(ip));
-    printf("Header Length : %i\n", HDLEN(ip));
-    printf("Type of Service : 0x%.2x\n", ip->ToS);
-    printf("Total Length : %i\n", ntohs(ip->tot_len));
-    printf("Identification : 0x%.2x\n", ntohs(ip->ident));
-    printf("Fragment Offset : 0x%.2x\n", ntohs(ip->frag_off));
-    printf("Time to Live : %i\n", ip->ttl);
-    printf("Header Checksum : 0x%.2x\n", ntohs(ip->chk_sum));
-    printf("Source Addresse : %s\n", inet_ntoa(ip->src));
-    printf("Destination Addresse : %s\n", inet_ntoa(ip->dst));
-    printf("Protocol : ");
+    printf("\n######### ARP #########\n");
+
+	printf("Hardware type : ethernet (%.2x)\n", ntohs(arp->arp_hrd));
+
+    printf("Protocol type : ");
+	if(ntohs(arp->arp_pro) == TYPE_IPv4)
+    {
+        printf(" IPv4");
+    }
+    else if(ntohs(arp->arp_pro) == TYPE_IPv6)
+    {
+        printf(" IPv6");
+    }
+    else
+    {
+        printf("Unknown");
+    }
+    
+	printf("\nHardware Address Length : %i\n", arp->arp_hln);
+	printf("Protocol Address Length : %i\n", arp->arp_pln);
+
+    printf("Operation : ");
+    if(ntohs(arp->arp_op) == ARPOP_REQUEST)
+    {
+		printf("Request (%.2x)", ntohs(arp->arp_op));
+    }
+    else if(ntohs(arp->arp_op) == ARPOP_REPLY)
+    {
+		printf("Reply (%.2x)", ntohs(arp->arp_op));
+    }
+    else
+    {
+        printf("Unknown");
+    }
+
+    printf("\nSender Hardware Address : %.2x:%.2x:%.2x:%.2x:%.2x:%.2x \n", 
+            arp->arp_sha[0],arp->arp_sha[1],arp->arp_sha[2],
+            arp->arp_sha[3],arp->arp_sha[4],arp->arp_sha[5]);
+
+    printf("Sender Protocol Address : %i.%i.%i.%i \n", 
+            arp->arp_spa[0],arp->arp_spa[1],arp->arp_spa[2],arp->arp_spa[3]);
+
+    printf("Target Hardware Address : %.2x:%.2x:%.2x:%.2x:%.2x:%.2x \n", 
+            arp->arp_tha[0],arp->arp_tha[1],arp->arp_tha[2],
+            arp->arp_tha[3],arp->arp_tha[4],arp->arp_tha[5]);
+
+    printf("Target Protocol Address : %i.%i.%i.%i \n", 
+            arp->arp_tpa[0],arp->arp_tpa[1],arp->arp_tpa[2],arp->arp_tpa[3]);
 }
 
 
 
-int ip_pkt(u_char * verbose, const u_char * packet)
+
+/**
+ * @brief process the ARP header
+ * 
+ * @param verbose
+ * @param packet
+ */
+void arp_pkt(u_char * verbose, const u_char * packet)
 {
-    int trnsprt_len = 0;
-    const struct ip_head *ip;
-    ip = (const struct ip_head*) packet;
+
+    const struct ether_arp * arp;
+    arp = (const struct ether_arp *) packet;
 
     int verb = atoi((const char *) verbose);
     switch (verb)
     {
     case 1:
+        printf("RARP");
         break;
 
     case 2:
-        ip_v2(ip);
+        arp_v2(arp);
         break;
 
     case 3:
-        ip_v3(ip);
+        arp_v3(arp);
         break;
     
     default:
         fprintf(stderr, "error switch ethernet_pkt function");
         break;
     }
-
-    switch (ip->protocol)
-    {
-    case UDP:
-        printf("UDP");
-        udp_pkt(verbose, packet + HDLEN(ip) * 4);
-        trnsprt_len = 8;
-        break;
-
-    case TCP:
-        printf("TCP");
-        trnsprt_len = tcp_pkt(verbose, packet + HDLEN(ip) * 4);
-        break;
-    
-    default:
-        printf("....\n");
-        fprintf(stderr, "Transport protocol not supported\n");
-        break;
-    }
-
-
-    int totlen = ntohs(ip->tot_len);
-    return totlen - HDLEN(ip) - trnsprt_len;
 }
