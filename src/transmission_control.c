@@ -108,7 +108,7 @@ void tcp_pkt(u_char * verbose, const u_char *segment, int len_ip)
 
 	if (ntohs(tcp->src_port) == PORT_DNS || ntohs(tcp->dst_port) == PORT_DNS)
 	{
-		dns_pkt(verbose, segment, len_ip - D_OFF(tcp) * 4);
+		dns_pkt(verbose, segment + D_OFF(tcp), len_ip - D_OFF(tcp) * 4);
 	}
 	if (ntohs(tcp->src_port) == PORT_FTP || ntohs(tcp->dst_port) == PORT_FTP)
 	{
@@ -120,25 +120,25 @@ void tcp_pkt(u_char * verbose, const u_char *segment, int len_ip)
 	}
 	if (ntohs(tcp->src_port) == PORT_POP || ntohs(tcp->dst_port) == PORT_POP)
 	{
-		pop_pkt(verbose, segment, len_ip - D_OFF(tcp) * 4);
+		pop_pkt(verbose, segment + D_OFF(tcp) * 4, len_ip - D_OFF(tcp) * 4);
 	}
 	if (ntohs(tcp->src_port) == PORT_IMAP || ntohs(tcp->dst_port) == PORT_IMAP)
 	{
-		imap_pkt(verbose, segment, len_ip - D_OFF(tcp) * 4);
+		imap_pkt(verbose, segment + D_OFF(tcp) * 4, len_ip - D_OFF(tcp) * 4);
 	}
 	if (ntohs(tcp->src_port) == PORT_SMTP || ntohs(tcp->dst_port) == PORT_SMTP)
 	{
-		smtp_pkt(verbose, segment, len_ip - D_OFF(tcp) * 4);
+		smtp_pkt(verbose, segment + D_OFF(tcp) * 4, len_ip - D_OFF(tcp) * 4);
 	}
 	if (ntohs(tcp->src_port) == PORT_BOOTP_C || 
         ntohs(tcp->src_port) == PORT_BOOTP_S || 
         ntohs(tcp->dst_port) == PORT_BOOTP_C || 
         ntohs(tcp->dst_port) == PORT_BOOTP_S)
 	{
-		bootp_pkt(verbose, segment, len_ip - 8);
+		bootp_pkt(verbose, segment + D_OFF(tcp) * 4, len_ip - 8);
 	}
 	if (ntohs(tcp->src_port) == PORT_DNS || ntohs(tcp->dst_port) == PORT_DNS)
 	{
-		dns_pkt(verbose, segment, len_ip - 8);
+		dns_pkt(verbose, segment + D_OFF(tcp) * 4, len_ip - 8);
 	}
 }

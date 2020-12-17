@@ -24,8 +24,9 @@ supported protocols :
  IMAP,
  POP,
  
- 
- 
+For BOOTP vendors specific and requested parameters list, only the most interesting options have been analysed. The same goes for the commands of SMTP, POP, IMAP ,...
+
+
 
 # analyseur réseau
 
@@ -53,3 +54,4 @@ protocols supportés :
  IMAP,
  POP,
 
+Concernant la partie vendors specific et parameters request list de BOOTP, seules les options les plus intéressantes ont été traitées. Il en va de même pour SMTP, POP, IMAP...

@@ -13,63 +13,189 @@
  */
 void imap_cmd(const u_char * data)
 {
+    int test = 0;
     const char *payload = (const char *) data;
-
+    
 	if (strstr(payload, "LOGIN") != NULL)
 	{
-		printf("LOGIN, ");
+		printf("response : LOGIN, ");
+        test = 1;
+	}
+    if (strstr(payload, "IDLE") != NULL)
+	{
+		printf("response : IDLE, ");
+        test = 1;
 	}
 	if (strstr(payload, "SELECT") != NULL)
 	{
-		printf("SELECT, ");
+		printf("response : SELECT, ");
+        test = 1;
 	}
 	if (strstr(payload, "LOGOUT") != NULL)
 	{
-		printf("LOGOUT, ");
+		printf("response : LOGOUT, ");
+        test = 1;
 	}
 	if (strstr(payload, "NOOP") != NULL)
 	{
-		printf("NOOP, ");
+		printf("response : NOOP, ");
+        test = 1;
 	}
 	if (strstr(payload, "LIST") != NULL)
 	{
-		printf("LIST, ");
+		printf("response : LIST, ");
+        test = 1;
 	}
 	if (strstr(payload, "CREATE") != NULL)
 	{
-		printf("CREATE, ");
+		printf("response : CREATE, ");
+        test = 1;
 	}
 	if (strstr(payload, "DELETE") != NULL)
 	{
-		printf("DELETE, ");
+		printf("response : DELETE, ");
+        test = 1;
 	}
 	if (strstr(payload, "RENAME") != NULL)
 	{
-		printf("RENAME, ");
+		printf("response : RENAME, ");
+        test = 1;
 	}
 	if (strstr(payload, "APPEND") != NULL)
 	{
-		printf("APPEND, ");
+		printf("response : APPEND, ");
+        test = 1;
 	}
 	if (strstr(payload, "FETCH") != NULL)
 	{
-		printf("FETCH, ");
+		printf("response : FETCH, ");
+        test = 1;
 	}
 	if (strstr(payload, "UID") != NULL)
 	{
-		printf("UID, ");
+		printf("response : UID, ");
+        test = 1;
 	}
 	if (strstr(payload, "COPY") != NULL)
 	{
-		printf("COPY, ");
+		printf("response : COPY, ");
+        test = 1;
 	}
 	if (strstr(payload, "STORE") != NULL)
 	{
 		printf("STORE, ");
+        test = 1;
 	}
-	if (strstr(payload, " OK ") != NULL)
+
+
+	if (strstr(payload, "login") != NULL)
 	{
-		printf("OK, ");
+		printf("request : login, ");
+        test = 1;
+	}
+    if (strstr(payload, "idle") != NULL)
+	{
+		printf("request : idle, ");
+        test = 1;
+	}
+	if (strstr(payload, "select") != NULL)
+	{
+		printf("request : select, ");
+        test = 1;
+	}
+	if (strstr(payload, "logout") != NULL)
+	{
+		printf("request : logout, ");
+        test = 1;
+	}
+	if (strstr(payload, "noop") != NULL)
+	{
+		printf("request : noop, ");
+        test = 1;
+	}
+	if (strstr(payload, "list") != NULL)
+	{
+		printf("request : list, ");
+        test = 1;
+	}
+	if (strstr(payload, "create") != NULL)
+	{
+		printf("request : create, ");
+        test = 1;
+	}
+	if (strstr(payload, "delete") != NULL)
+	{
+		printf("request : delete, ");
+        test = 1;
+	}
+	if (strstr(payload, "rename") != NULL)
+	{
+		printf("request : rename, ");
+        test = 1;
+	}
+	if (strstr(payload, "append") != NULL)
+	{
+		printf("request : append, ");
+        test = 1;
+	}
+	if (strstr(payload, "fetch") != NULL)
+	{
+		printf("request : fetch, ");
+        test = 1;
+	}
+	if (strstr(payload, "uid") != NULL)
+	{
+		printf("request : uid, ");
+        test = 1;
+	}
+	if (strstr(payload, "copy") != NULL)
+	{
+		printf("request : copy, ");
+        test = 1;
+	}
+	if (strstr(payload, "store") != NULL)
+	{
+		printf("request : store, ");
+        test = 1;
+	}
+
+    if (!test)
+    {
+        printf("none");
+    }
+    printf("\n");
+
+    if ((payload[0] >= 49) && (payload[0] <= 53))
+    {
+        int count = 1;
+        while ((payload[count] >= 49) && (payload[count] <= 53))
+        {
+            count++;
+        }
+        printf("Tag : ");
+        for (int i = 0; i <= count; i++)
+        {
+            printf("%c", payload[i]);
+        }
+        printf("\n");
+        
+        test = 1;
+    }
+    
+	if (strstr(payload, "OK") != NULL)
+	{
+		printf("status : OK\n");
+        test = 1;
+	}
+	if (strstr(payload, "NO") != NULL)
+	{
+		printf("status : NO\n");
+        test = 1;
+	}
+	if (strstr(payload, "BAD") != NULL)
+	{
+		printf("status = BAD\n");
+        test = 1;
 	}
 }
 
@@ -94,7 +220,6 @@ void imap_pkt(u_char * verbose, const u_char *data, int app_len)
 
     case 2:
         printf("\n-> imap header \n");
-        printf("cmd : ");
         imap_cmd(data);
         printf("\n");
         break;
@@ -102,7 +227,6 @@ void imap_pkt(u_char * verbose, const u_char *data, int app_len)
     case 3:
         printf("\n");
         printf("\n########## imap header ##########\n");
-        printf("command : ");
         imap_cmd(data);
         printf("\n");
         printf("\n"); 

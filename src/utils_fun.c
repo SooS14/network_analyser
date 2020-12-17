@@ -30,6 +30,7 @@ void print_hex(const unsigned char *payload, int size)
 {
 	const unsigned char *ptr = payload;
 	unsigned char trad_ascii[16];
+    int tmp = 0;
 
 	printf("0    ");
 	for (int i = 1; i < size; i++)
@@ -40,6 +41,7 @@ void print_hex(const unsigned char *payload, int size)
 
 		if ((i % 16) == 0)
 		{
+            tmp = i;
 			printf("    ");
 			for (int j = 0; j < 16; j++)
 			{
@@ -54,7 +56,27 @@ void print_hex(const unsigned char *payload, int size)
 			}
 			printf("\n%i    ", i);
 		}
+        
 	}
+
+    for (int j = 0; j < 17-size+tmp; j++)
+    {
+        printf("   ");
+    }
+    printf("    ");
+
+    for (int j = 0; j < size-tmp; j++)
+    {
+	    if (isprint(trad_ascii[j]))
+		{
+			printf("%c", trad_ascii[j]);
+		}
+		else
+		{
+			printf(".");
+		}
+    }
+
 	printf("\n");
 	printf("\n");
 }

@@ -29,37 +29,48 @@ struct bootp_head {
 };
 
 
+
 // BOOTP opcode
-#define BOOTP_REQUEST	0x01
-#define BOOTP_REPLY		0x02
+#define BOOTP_REQUEST	1
+#define BOOTP_REPLY		2
 
 
 // DHCP Options
-#define SUBNET_MASK     0x01
-#define TIME_OFFSET     0x02
-#define ROUTER          0x03
-#define DNS             0x06
-#define HOST_NAME       0x12
-#define DOMAIN_NAME     0x15
-#define BROADCAST_ADDR  0x28
-#define NONS            0x44
-#define NOS             0x47
-#define REQ_IP_ADDR     0x50
-#define LEASE_TIME      0x51
-#define DHCP_MESS_TYPE  0x53
-#define SERV_ID         0x54
-#define PARAM_REQ_LST   0x55
-#define CLIENT_ID       0x61
-
+#define DHCP_SUBNET_MASK     1
+#define DHCP_TIME_OFFSET     2
+#define DHCP_ROUTER          3
+#define DHCP_DNS             6
+#define DHCP_HOST_NAME       12
+#define DHCP_DOMAIN_NAME     15
+#define DHCP_BROADCAST_ADDR  28
+#define DHCP_NONS            44
+#define DHCP_NOS             47
+#define DHCP_REQ_IP_ADDR     50
+#define DHCP_LEASE_TIME      51
+#define DHCP_DHCP_MESS_TYPE  53
+#define DHCP_SERV_ID         54
+#define DHCP_PARAM_REQ_LST   55
+#define DHCP_CLIENT_ID       61
+#define DHCP_END            255
 
 // DHCP Message types (values for TAG_DHCP_MESSAGE option)
-#define	DHCP_DISCOVER	0x01
-#define DHCP_OFFER	    0x02
-#define	DHCP_REQUEST	0x03
-#define	DHCP_DECLINE	0x04
-#define	DHCP_ACK		0x05
-#define	DHCP_NAK		0x06
-#define	DHCP_RELEASE    0x07
+#define	DHCP_DISCOVER	1
+#define DHCP_OFFER	    2
+#define	DHCP_REQUEST	3
+#define	DHCP_DECLINE	4
+#define	DHCP_ACK		5
+#define	DHCP_NAK		6
+#define	DHCP_RELEASE    7
+
+//DHCP Parameters request list
+#define DHCP_REQ_SUBNET_MSK     1
+#define DHCP_REQ_DOMAIN_NAME    15
+#define DHCP_REQ_ROUTER         3
+#define DHCP_REQ_NONS           44
+#define DHCP_REQ_NNT            46
+#define DHCP_REQ_NOS            47
+#define DHCP_REQ_DNS            6
+
 
 
 #endif

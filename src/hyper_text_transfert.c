@@ -7,73 +7,82 @@
 
 
 
-/**
- * @brief prints http command
- * 
- * @param data is a struct the applicative data
- */
-void http_req(const u_char * data)
+void http_status(const u_char * data)
 {
+    const char * payload = (const char *) data;
+    int count = 0;
+    int len = strlen(payload);
 
-    const char *payload = (const char *) data;
+    if (strstr(payload,"HTTP/") != NULL)
+    {
+        while ((payload[count] != '\r') && (payload[count+1] != '\n'))
+        {
+            printf("%c",payload[count]);
+            count++;
+            if (count >= len)
+            {
+                break;
+            }
+        }
+    }
+}
 
-    if (strstr(payload, "GET") != NULL)
+
+void print_field(const char *payload, const char * needle)
+{
+    char * ptr;
+    int len = strlen(payload);
+    int count = 0;
+    
+    if ((ptr = strstr(payload, needle)) != NULL)
 	{
-		printf("GET, ");
-	}
-    if (strstr(payload, "HEAD") != NULL)
-	{
-		printf("HEAD, ");
-	}
-    if (strstr(payload, "POST") != NULL)
-	{
-		printf("POST, ");
-	}
-    if (strstr(payload, "OPTIONS") != NULL)
-	{
-		printf("OPTIONS, ");
-	}
-    if (strstr(payload, "PUT") != NULL)
-	{
-		printf("PUT, ");
-	}
-    if (strstr(payload, "DELETE") != NULL)
-	{
-		printf("DELETE, ");
-	}
-    if (strstr(payload, "TRACE") != NULL)
-	{
-		printf("TRACE, ");
-	}
-    if (strstr(payload, "OK") != NULL)
-	{
-		printf("OK, ");
+        while ((*ptr != '\r') && (*(ptr+1) != '\n'))
+        {
+            putc(*ptr,stdout);
+            ptr++;
+            count++;
+            if (count >= len)
+            {
+                break;
+            }
+        }
+        printf("\n");
+
 	}
 }
 
 
 /**
- * @brief prints HTTP version
+ * @brief prints HTTP headers
  * 
  * @param data is a struct the applicative data
  */
-void http_ver(const u_char * data)
+void http_head(const u_char * data)
 {
     const char *payload = (const char *) data;
 
-    if (strstr(payload, "HTTP/1.0") != NULL)
-	{
-		printf("HTTP/1.0, ");
-	}
-    if (strstr(payload, "HTTP/1.1") != NULL)
-	{
-		printf("HTTP/1.1, ");
-	}
-    if (strstr(payload, "HTTP/2") != NULL)
-	{
-		printf("HTTP/2, ");
-	}
+    print_field(payload,"Connection");
+    print_field(payload,"Date");
+    print_field(payload,"Accept");
+    print_field(payload,"Accept-Encoding");
+    print_field(payload,"Accept-Charset");
+    print_field(payload,"Accept-Language");
+    print_field(payload,"Cookie");
+    print_field(payload,"Host");
+    print_field(payload,"If-Modified-Since");
+    print_field(payload,"Range");
+    print_field(payload,"Referer");
+    print_field(payload,"User-Agent");
+    print_field(payload,"Accept-Range");
+    print_field(payload,"Age");
+    print_field(payload,"Set-Cookie");
+    print_field(payload,"Last-Modified");
+    print_field(payload,"Content-Length");
+    print_field(payload,"Content-Range");
+    print_field(payload,"Content-Transfert-Encoding");
+    print_field(payload,"Content-Type");
 }
+
 
 
 /**
@@ -94,23 +103,18 @@ void http_pkt(u_char * verbose, const u_char *data, int app_len)
 
     case 2:
         printf("\n-> http header \n");
-        printf("cmd : ");
-        http_req(data);
-        printf("ver : ");
-        http_ver(data);
+        http_status(data);
         printf("\n");
         break;
 
     case 3:
         printf("\n");
         printf("\n########## http header ##########\n");
-        printf("Commande : ");
-        http_req(data);
+        http_status(data);
         printf("\n"); 
-        printf("Version : ");
-        http_ver(data);
-        printf("\n"); 
-        print_hex(data, app_len);    
+        http_head(data);
+        printf("\n");
+        print_hex(data, app_len);
         break;
     
     default:

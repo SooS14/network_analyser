@@ -4,152 +4,233 @@
 #include "header_def.h"
 #include "utils_fun.h"
 #include "bootp.h"
-
+#include <ctype.h>
 
 
 
 /**
  * @brief prints vendor specific option
  * 
+ * Vendor's specific options are stored in a char array.
+ * The function goes through this array and analyse the information
+ * in TLV form. Not all options are supported, see bootp.h for more details.
+ * 
  * @param vend vendor specific parts of bootp header
  */
 void vendor_spe(const unsigned char * vend)
 {
-    /*
-    for (int i = 0; i < 64; i++)
-    {
-        printf("sooooooos : %.2x\n", vend[i]);
-    }
-    */
-    
+
+    printf("vendor specific : ");
+
 	if (vend[0] != 0x63 ||
         vend[1] != 0x82 ||
 	    vend[2] != 0x53 ||
         vend[3] != 0x63)
 	{
+        printf("no  magic cookie\n");
 		return;
 	}
 
-    printf("vendor specific : ");
+    printf("DHCP\n");
     int count = 4;
+    int time = 0;
 
     while (count < 64)
     {
         switch (vend[count])
         {
-        case SUBNET_MASK:
-            printf("subnet mask : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+
+        case DHCP_END:
+            printf("----end of dhcp options\n");
+            printf("----Padding : ");
+            for (int i = count+1; i < 64; i++)
             {
                 printf("%.2x", vend[i]);
             }
-            count = vend[count+1] + 1 + count;
             printf("\n");
-            
+            return;
+
+
+        case DHCP_SUBNET_MASK:
+            printf("----subnet mask : ");
+            if (vend[count+1] == 4)
+            {
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
+            }
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
+            printf("\n");
             break;
 
-        case TIME_OFFSET:
-            printf("time offset : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_TIME_OFFSET:
+            printf("----time offset : 0x");
+            time = 0;
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                time += vend[count+i+2];
             }
-            count = vend[count+1] + 1 + count;
+            printf("%i", time);
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case ROUTER:
-            printf("router : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_ROUTER:
+            printf("----router : ");
+            if (vend[count+1] == 4)
             {
-                printf("%.2x", vend[i]);
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
             }
-            count = vend[count+1] + 1 + count;
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case DNS:
-            printf("dns : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_DNS:
+            printf("----dns : ");
+            if (vend[count+1] == 4)
             {
-                printf("%.2x", vend[i]);
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
             }
-            count = vend[count+1] + 1 + count;
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
             printf("\n");            
             break;
 
-        case HOST_NAME:
-            printf("host name : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_HOST_NAME:
+            printf("----host name : 0x");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                if (isprint(vend[count+i+2]))
+                {
+                    printf("%c", vend[count+i+2]);
+                }
+                else
+                {
+                    printf(".");
+                }
             }
-            count = vend[count+1] + 1 + count;
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case DOMAIN_NAME:
-            printf("domain name : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_DOMAIN_NAME:
+            printf("----domain name : 0x");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                if (isprint(vend[count+i+2]))
+                {
+                    printf("%c", vend[count+i+2]);
+                }
+                else
+                {
+                    printf(".");
+                }
             }
-            count = vend[count+1] + 1 + count;
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case BROADCAST_ADDR:
-            printf("broadcast addr : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_BROADCAST_ADDR:
+            printf("----broadcast addr : ");
+            if (vend[count+1] == 4)
             {
-                printf("%.2x", vend[i]);
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
             }
-            count = vend[count+1] + 1 + count;
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case NONS:
-            printf("netbios over TCP/IP name server : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_NONS:
+            printf("----netbios over TCP/IP name server : 0x");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                printf("%.2x", vend[count+i+2]);
             }
-            count = vend[count+1] + 1 + count;
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case NOS:
-            printf("netbios over TCP/IP scope : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_NOS:
+            printf("----netbios over TCP/IP scope : 0x");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                printf("%.2x", vend[count+i+2]);
             }
-            count = vend[count+1] + 1 + count;
+            count = vend[count+1] + 2 + count;
             printf("\n");        
             break;
 
-        case REQ_IP_ADDR:
-            printf("Requested IP address : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_REQ_IP_ADDR:
+            printf("----Requested IP address : ");
+            if (vend[count+1] == 4)
             {
-                printf("%.2x", vend[i]);
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
             }
-            count = vend[count+1] + 1 + count;
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
             printf("\n");  
             break;
 
-        case LEASE_TIME:
-            printf("leas time : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_LEASE_TIME:
+            printf("----lease time : ");
+            time = 0;
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                time += vend[count+i+2];
             }
-            count = vend[count+1] + 1 + count;
+            printf("%i",time);
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
-        case DHCP_MESS_TYPE:
-            printf("DHCP message type : 0x");
+        case DHCP_DHCP_MESS_TYPE:
+            printf("----DHCP message type : ");
 
             switch (vend[count+2])
             {
@@ -189,37 +270,82 @@ void vendor_spe(const unsigned char * vend)
             printf("\n");
             break;
 
-        case SERV_ID:
-            printf("netbios over TCP/IP name server : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_SERV_ID:
+            printf("----Server identifier : ");
+            if (vend[count+1] == 4)
             {
-                printf("%.2x", vend[i]);
+                printf("%i.%i.%i.%i",
+                    vend[count+2],vend[count+3],
+                    vend[count+4],vend[count+5]);
             }
-            count = vend[count+1] + 1 + count;
+            else
+            {
+                printf("0x");
+                for (int i = 0; i < vend[count+1]; i++)
+                {
+                    printf("%.2x", vend[count+i+2]);
+                }
+            }
+            count = vend[count+1] + 2 + count;
             printf("\n");          
             break;
 
-        case PARAM_REQ_LST:
-            printf("netbios over TCP/IP name server : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_PARAM_REQ_LST:
+            printf("----Parameters request list :\n");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                switch (vend[count+2+i])
+                {
+                case DHCP_REQ_SUBNET_MSK:
+                    printf("    ~~~~DHCP_REQ_SUBNET_MSK\n");
+                    break;
+
+                case DHCP_REQ_DOMAIN_NAME:
+                    printf("    ~~~~DHCP_REQ_DOMAIN_NAME\n");
+                    break;
+
+                case DHCP_REQ_ROUTER:
+                    printf("    ~~~~DHCP_REQ_ROUTER\n");
+                    break;
+
+                case DHCP_REQ_NONS:
+                    printf("    ~~~~DHCP_REQ_NONS\n");
+                    break;
+
+                case DHCP_REQ_NNT:
+                    printf("    ~~~~DHCP_REQ_NNT\n");
+                    break;
+
+                case DHCP_REQ_NOS:
+                    printf("    ~~~~DHCP_REQ_NOS\n");
+                    break;
+
+                case DHCP_REQ_DNS:
+                    printf("    ~~~~DHCP_REQ_DNS\n");
+                    break;
+
+                default:
+                    printf("    ~~~~requested parameter not supported\n");
+                    break;
+                }
             }
-            count = vend[count+1] + 1 + count;
-            printf("\n");
+            count = vend[count+1] + 2 + count;
+
             break;
 
-        case CLIENT_ID:
-            printf("netbios over TCP/IP name server : 0x");
-            for (int i = count+2; i < vend[count+1]; i++)
+        case DHCP_CLIENT_ID:
+            printf("----Client identifier : 0x");
+            for (int i = 0; i < vend[count+1]; i++)
             {
-                printf("%.2x", vend[i]);
+                printf("%.2x", vend[count+i+2]);
             }
-            count = vend[count+1] + 1 + count;
+            count = vend[count+1] + 2 + count;
             printf("\n");
             break;
 
         default:
+            printf("----Option not supported : 0x%.2x\n", vend[count]);
+            count=count+vend[count+1]+2;
             break;
         }
 
@@ -276,7 +402,7 @@ void bootp_v3(const struct bootp_head *bootp)
             bootp->chaddr[3],bootp->chaddr[4],bootp->chaddr[5]);
     printf("Server Name : %s\n", bootp->sname);
     printf("File name : %s\n", bootp->file);
-    //vendor_spe(bootp->vend); NE MARCHE PAS WHILE INF À VOIR
+    vendor_spe(bootp->vend); //NE MARCHE PAS WHILE INF À VOIR
 }
 
 

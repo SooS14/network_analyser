@@ -14,63 +14,88 @@
 void pop_cmd(const u_char * data)
 {
     const char *payload = (const char *) data;
+    int test = 0;
 
 	if (strstr(payload, "USER") != NULL)
 	{
 		printf("USER, ");
+        test = 1;
+	}
+	if (strstr(payload, "STLS") != NULL)
+	{
+		printf("STLS, ");
+        test = 1;
 	}
 	if (strstr(payload, "PASS") != NULL)
 	{
 		printf("PASS, ");
+        test = 1;
 	}
 	if (strstr(payload, "STAT") != NULL)
 	{
 		printf("STAT, ");
+        test = 1;
 	}
 	if (strstr(payload, "LIST") != NULL)
 	{
 		printf("LIST, ");
+        test = 1;
 	}
 	if (strstr(payload, "UIDL") != NULL)
 	{
 		printf("UIDL, ");
+        test = 1;
 	}
 	if (strstr(payload, "RETR") != NULL)
 	{
 		printf("RETR, ");
+        test = 1;
 	}
 	if (strstr(payload, "DELE") != NULL)
 	{
 		printf("DELE, ");
+        test = 1;
 	}
 	if (strstr(payload, "TOP") != NULL)
 	{
 		printf("TOP, ");
+        test = 1;
 	}
 	if (strstr(payload, "LAST") != NULL)
 	{
 		printf("LAST, ");
+        test = 1;
 	}
 	if (strstr(payload, "RSET") != NULL)
 	{
 		printf("RSET, ");
+        test = 1;
 	}
 	if (strstr(payload, "NOOP") != NULL)
 	{
 		printf("NOOP, ");
+        test = 1;
 	}
 	if (strstr(payload, "QUIT") != NULL)
 	{
 		printf("QUIT, ");
+        test = 1;
 	}
 	if (strstr(payload, "+OK") != NULL)
 	{
 		printf("+OK, ");
+        test = 1;
 	}
 	if (strstr(payload, "-ERR") != NULL)
 	{
 		printf("-ERR, ");
+        test = 1;
 	}
+    if (!test)
+    {
+        printf("none");
+    }
+    
 }
 
 

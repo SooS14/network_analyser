@@ -7,7 +7,7 @@ valgrind --tool=memcheck --leak-check=full ./bin/analyseur
 For lists of detected and suppressed errors, rerun with: -s
 */
 
-// TODO : strstr bizarre - print_hex ne print pas tout - vendor spe ne marche pas
+// TODO : strstr bizarre - print_hex ne print pas tout 
 
 
 #include <pcap/pcap.h>

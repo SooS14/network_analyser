@@ -15,111 +15,144 @@
 void ftp_cmd(const u_char * data)
 {
     const char *payload = (const char *) data;
+    int test = 0;
 
     if (strstr(payload, "USER") != NULL)
 	{
 		printf("USER, ");
+        test = 1;
 	}
     if (strstr(payload, "PASS") != NULL)
 	{
 		printf("PASS, ");
+        test = 1;
 	}
     if (strstr(payload, "ACCT") != NULL)
 	{
 		printf("ACCT, ");
-	}
+        test = 1;
+    }
     if (strstr(payload, "CWD") != NULL)
 	{
 		printf("CWD, ");
+        test = 1;
 	}
     if (strstr(payload, "CDUP") != NULL)
 	{
 		printf("CDUP, ");
+        test = 1;
 	}
     if (strstr(payload, "QUIT") != NULL)
 	{
 		printf("QUIT, ");
+        test = 1;
 	}
     if (strstr(payload, "PORT") != NULL)
 	{
 		printf("PORT, ");
+        test = 1;
 	}
     if (strstr(payload, "PASV") != NULL)
 	{
 		printf("PASV, ");
+        test = 1;
 	} 
     if (strstr(payload, "TYPE") != NULL)
 	{
 		printf("TYPE, ");
+        test = 1;
 	} 
     if (strstr(payload, "RETR") != NULL)
 	{
 		printf("RETR, ");
+        test = 1;
 	} 
     if (strstr(payload, "STOR") != NULL)
 	{
 		printf("STOR, ");
+        test = 1;
 	} 
     if (strstr(payload, "APPE") != NULL)
 	{
 		printf("APPE, ");
+        test = 1;
 	} 
     if (strstr(payload, "REST") != NULL)
 	{
 		printf("REST, ");
+        test = 1;
 	} 
     if (strstr(payload, "RNFR") != NULL)
 	{
 		printf("RNFR, ");
+        test = 1;
 	} 
     if (strstr(payload, "RNTO") != NULL)
 	{
 		printf("RNTO, ");
+        test = 1;
 	}
     if (strstr(payload, "ABOR") != NULL)
 	{
 		printf("ABOR, ");
+        test = 1;
 	}
     if (strstr(payload, "DELE") != NULL)
 	{
 		printf("DELE, ");
+        test = 1;
 	}
     if (strstr(payload, "RMD") != NULL)
 	{
 		printf("RMD, ");
+        test = 1;
 	}
     if (strstr(payload, "MKD") != NULL)
 	{
 		printf("MKD, ");
+        test = 1;
 	}
     if (strstr(payload, "PWD") != NULL)
 	{
 		printf("PWD, ");
+        test = 1;
 	}
     if (strstr(payload, "LIST") != NULL)
 	{
 		printf("LIST, ");
+        test = 1;
 	}
     if (strstr(payload, "SITE") != NULL)
 	{
 		printf("SITE, ");
+        test = 1;
 	}
     if (strstr(payload, "SYST") != NULL)
 	{
 		printf("SYST, ");
+        test = 1;
 	}
     if (strstr(payload, "STAT") != NULL)
 	{
 		printf("STAT, ");
+        test = 1;
 	}
     if (strstr(payload, "HELP") != NULL)
 	{
 		printf("HELP, ");
+        test = 1;
 	}
     if (strstr(payload, "NOOP") != NULL)
 	{
 		printf("NOOP, ");
+        test = 1;
 	}
+
+    if (!test)
+    {
+        printf("none");
+    }
+    
 }
 
 
@@ -136,6 +169,11 @@ void ftp_code(const u_char * data)
     {
         printf(" %c%c%c", data[0], data[1], data[2]);
     }
+    else
+    {
+        printf("none");
+    }
+    
     
 }
 
