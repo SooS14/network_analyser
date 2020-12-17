@@ -198,7 +198,7 @@ void ftp_pkt(u_char * verbose, const u_char *data, int app_len)
         printf("\n-> ftp header \n");
         printf("cmd : ");
         ftp_cmd(data);
-        printf(" code : ");
+        printf(" ; code : ");
         ftp_code(data);
         printf("\n");
         break;

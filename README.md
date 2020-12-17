@@ -1,5 +1,10 @@
 # network_analyser
 
+
+-> open the "network_analyser" directory and use make to compile.
+-> the generated binary file is created in the bin folder
+-> "frames" directory contains ethernet frames for the tests
+
 options :
 
 -i <interface> : interface for live analysis
@@ -29,6 +34,11 @@ For BOOTP vendors specific and requested parameters list, only the most interest
 
 
 # analyseur réseau
+
+
+-> ouvrir le répertoire "network_analyser" et utiliser "make" pour compiler.
+-> le fichier binaire généré est dans le dossier bin
+-> le dossier "frames" contient des captures wireshark pour les tests
 
 options :
 

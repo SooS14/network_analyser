@@ -15,8 +15,8 @@
  */
 void ip_v2(const struct ip_head *ip)
 {
-    printf("\n-> ip header \n");
-    printf("ver : %i", ip->ver_hdlen >> 4);
+    printf("-> ip header \n");
+    printf("ver : %i ; ", ip->ver_hdlen >> 4);
 
     printf("protocol : ");
     switch (ip->protocol)

@@ -83,7 +83,7 @@ void imap_cmd(const u_char * data)
 	}
 	if (strstr(payload, "STORE") != NULL)
 	{
-		printf("STORE, ");
+		printf("response : STORE, ");
         test = 1;
 	}
 
@@ -219,7 +219,7 @@ void imap_pkt(u_char * verbose, const u_char *data, int app_len)
         break;
 
     case 2:
-        printf("\n-> imap header \n");
+        printf("-> imap header \n");
         imap_cmd(data);
         printf("\n");
         break;

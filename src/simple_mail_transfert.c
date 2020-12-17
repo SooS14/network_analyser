@@ -73,7 +73,7 @@ void esmtp_ext(const u_char * packet)
 
 void smtp_v2(const u_char *packet)
 {
-    printf("\n-> smtp header \n");
+    printf("-> smtp header \n");
     smtp_cmd(packet);
     printf("\n");
     esmtp_ext(packet);

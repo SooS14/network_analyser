@@ -39,8 +39,8 @@ void flag_tcp(unsigned char flags)
 void tcp_v2(const struct tcp_head *tcp)
 {
     printf("\n-> tcp header \n");
-    printf("src port : %i ", ntohs(tcp->src_port));
-    printf("dst port : %i ", ntohs(tcp->dst_port));
+    printf("src port : %i ; ", ntohs(tcp->src_port));
+    printf("dst port : %i ; ", ntohs(tcp->dst_port));
     printf("flags : ");
 	flag_tcp(tcp->tcp_flags);
 }

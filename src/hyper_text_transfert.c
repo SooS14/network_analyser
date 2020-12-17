@@ -102,7 +102,7 @@ void http_pkt(u_char * verbose, const u_char *data, int app_len)
         break;
 
     case 2:
-        printf("\n-> http header \n");
+        printf("-> http header \n");
         http_status(data);
         printf("\n");
         break;

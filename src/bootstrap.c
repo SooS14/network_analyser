@@ -362,9 +362,9 @@ void vendor_spe(const unsigned char * vend)
 void bootp_v2(const struct bootp_head *bootp)
 {
     printf("\n-> bootp header \n");
-	printf("ciaddr : %s", inet_ntoa(bootp->ciaddr));
-	printf("yiaddr : %s", inet_ntoa(bootp->yiaddr));
-	printf("siaddr : %s", inet_ntoa(bootp->siaddr));
+	printf("ciaddr : %s ", inet_ntoa(bootp->ciaddr));
+	printf("yiaddr : %s ", inet_ntoa(bootp->yiaddr));
+	printf("siaddr : %s ", inet_ntoa(bootp->siaddr));
 }
 
 
